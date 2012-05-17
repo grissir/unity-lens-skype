@@ -1,0 +1,11 @@
+[Lens]
+DBusName=net.launchpad.lens.skype
+DBusPath=/net/launchpad/lens/skype
+Name=Skype
+Icon=/usr/share/unity/lenses/skype/skype-wrapper.svg
+Description=A Lens to search for stuff in skype
+SearchHint=Search skype
+Shortcut=c
+
+[Desktop Entry]
+X-Ubuntu-Gettext-Domain=skype

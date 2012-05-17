@@ -1,0 +1,25 @@
+Source: unity-lens-skype
+Section: internet
+Priority: optional
+Maintainer: Christian Rupp <christian@r-k-r.de>
+Build-Depends: debhelper (>= 7),
+               pkg-config,
+               libglib2.0-dev (>= 2.27),
+               libdee-dev (>= 0.5.16),
+               libunity-dev (>= 3.6.2),
+               python-all,
+               python-distutils-extra
+Standards-Version: 3.9.1
+Homepage: http://github.com/grissir/unity-lens-skype
+
+Package: unity-lens-skype
+Architecture: all
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         ${python:Depends},
+         gir1.2-unity-5.0,
+         gir1.2-dee-1.0,
+Recommends: unity-scope-skypecontact
+Description: Lens for Skype
+ A Unity lens to search Skype stuff in the Dash.
+

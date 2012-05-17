@@ -1,0 +1,72 @@
+#! /usr/bin/python
+
+# Christian Rupp 2012 <christian@r-k-r.de>
+
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import sys
+import os
+from gi.repository import GLib, GObject, Gio
+from gi.repository import Dee
+
+
+BUS_NAME = "net.launchpad.lens.skype"
+
+class Daemon:
+
+	def __init__ (self):
+		# The path must match the one in .lens file
+		self._lens = Unity.Lens.new ("/net/launchpad/lens/skype", "Skype")
+		self._lens.props.search_hint = "Search Skype"
+		self._lens.props.visible = True;
+		self._lens.props.search_in_global = False;
+		
+		# categories
+		cats = []
+		cats.append (Unity.Category.new ("Torrents",
+		                                 Gio.ThemedIcon.new("/usr/share/unity/lenses/skype/contacts.svg"),
+		                                 Unity.CategoryRenderer.HORIZONTAL_TILE))
+
+		self._lens.props.categories = cats
+		
+		# filters
+		filters = []
+		f = Unity.RadioOptionFilter.new ("tpb_categories", "Type", Gio.ThemedIcon.new("input-keyboard-symbolic"), False)
+		f.add_option ("contacts", "Contacts", None)
+		filters.append (f)
+		
+		self._lens.props.filters = filters
+		
+		self._lens.export ();
+
+if __name__ == "__main__":
+	session_bus_connection = Gio.bus_get_sync (Gio.BusType.SESSION, None)
+	session_bus = Gio.DBusProxy.new_sync (session_bus_connection, 0, None,
+	                                      'org.freedesktop.DBus',
+	                                      '/org/freedesktop/DBus',
+	                                      'org.freedesktop.DBus', None)
+	result = session_bus.call_sync('RequestName',
+	                               GLib.Variant ("(su)", (BUS_NAME, 0x4)),
+	                               0, -1, None)
+	                               
+	# Unpack variant response with signature "(u)". 1 means we got it.
+	result = result.unpack()[0]
+	
+	if result != 1 :
+		print >> sys.stderr, "Failed to own name %s. Bailing out." % BUS_NAME
+		raise SystemExit (1)
+	
+	daemon = Daemon()
+	GObject.MainLoop().run()
+
